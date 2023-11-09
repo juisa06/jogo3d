@@ -5,11 +5,21 @@ using UnityEngine;
 
 public class coin : MonoBehaviour
 {
+    public AudioSource source;
+
+    private void Start()
+    {
+        source = GetComponent<AudioSource>();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag=="Player")
+        Contador coinCounter = GameObject.FindObjectOfType<Contador>();
+        if (other.gameObject.tag == "Player")
         {
-            Destroy(gameObject);
+            source.Play();
+            coinCounter.AddCoin();
+            Destroy(gameObject, 0.4f);
         }
     }
 }

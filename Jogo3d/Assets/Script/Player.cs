@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -27,7 +28,10 @@ public class Player : MonoBehaviour
     public Transform cam;
     public Animator anim;
     public Vector3 moveDirection;
-    
+    public Text lifetex;
+    public AudioSource Walk;
+    public AudioSource hit;
+    public AudioSource atacking;
     [Header("List")]
     public List<Transform> enemylist = new List<Transform>();
 
@@ -36,6 +40,7 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>();
         Controler = GetComponent<CharacterController>();
         cam = Camera.main.transform;
+        lifetex.text = life.ToString();
     }
     
     
@@ -62,6 +67,10 @@ public class Player : MonoBehaviour
 
                 if (!anim.GetBool("Atack"))
                 {
+                    if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.W))
+                    {
+                        Walk.Play();
+                    }
                     float angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
 
                     float smothAngle =
@@ -83,6 +92,7 @@ public class Player : MonoBehaviour
             }
             else if (iswalking)
             {
+                Walk.Stop();
                 anim.SetBool("Walking", false);
                 moveDirection = Vector3.zero;
                 anim.SetInteger("Transition", 0);
@@ -124,6 +134,7 @@ public class Player : MonoBehaviour
             anim.SetBool("Atack", true);
             anim.SetInteger("Transition", 1);
             yield return new WaitForSeconds(0.52f);
+            atacking.Play();
 
             GetEnemy();
 
@@ -165,6 +176,9 @@ public class Player : MonoBehaviour
     public void getHit(int dmg)
     {
         life -= dmg;
+        lifetex.text = " " + life;
+        hit.Play();
+
         if (life > 0)
         {
             StopCoroutine("Matack");
